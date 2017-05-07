@@ -20,6 +20,7 @@ public class MySort {
     public MySort(int[] myArray){
         this.myArray = myArray;
     }
+
     public int getElementNum() {
         return elementNum;
     }
@@ -32,6 +33,7 @@ public class MySort {
     public int getMyArrayElement(int elementNum) {
         return myArray[elementNum];
     }
+
     public int[] randomArrayGenerator(int elementNum, int elementRange) {
         int[] rndArray = new int[elementNum];
         for (int n = 0; n < elementNum; n++) {
@@ -40,45 +42,45 @@ public class MySort {
         }
         return rndArray;
     }
-    public void printDebegArray(int[] myArray){
-        String separator = System.getProperty("line.separator");
-        System.out.print("[");
-        for (int n = 0; n < myArray.length - 1; n++){
-            System.out.print(myArray[n] + ",");
-        }
-        System.out.print(myArray[myArray.length - 1] + "]" +
-                separator +  "and myArray.length is " + myArray.length);
-        System.out.println("");
-    }
+    /*
+
+    変数名は「[対象][その対象がどういう状態か]」とする。
+    例）arrayTempSored
+    対象：配列
+    どういう状態か：一時的にソートされている状態
+
+    array→配列
+    num→その配列要素の配列番号
+    element→その配列要素のバリュー
+
+     */
 
     public int[] insertionSort(int[] myArray) {
-        //ソート処理仮置き用配列の初期化
-        int[] sortedArray = new int[myArray.length];
-
-        //最小値が決定したら固定点(firstElement)を次に小さい値にずらす。
-        for (int fixedNum = 0; fixedNum < myArray.length; fixedNum++) {
-            for (int myArrayNum = 1; myArrayNum < myArray.length; myArrayNum++) {
-                //固定点設定
-                int firstElement = myArray[fixedNum];
-                if (firstElement <= myArray[myArrayNum]) {
-                    //比較対象が昇順になってるのでなにもしない
-                } else if (firstElement > myArray[myArrayNum]) {
-
+        int[] arrayTempSored = new int[myArray.length];
+        //最小値が決定したら固定点(numFixed = elementFixed)を次に小さい値にずらす。
+        for (int numFixed = 0; numFixed < myArray.length; numFixed++) {
+            //固定点の次の要素から固定点と比較する。
+            for (int numToBeCompared = 1; numToBeCompared < myArray.length; numToBeCompared++) {
+                //固定点と比較対象
+                int elementFixed = myArray[numFixed];
+                int elementToBeCompared = myArray[numToBeCompared];
+                //比較対象が降順の場合のみ、昇順にならべかえる。
+                if (elementFixed > elementToBeCompared) {
                     //固定点より小さい値が出現したら小さい値を固定点に置き、
-                    sortedArray[fixedNum] = myArray[myArrayNum];
-
-                    //元の固定点以降の数列を右にずらす。
-                    for (int oneToSortedArrayNum = fixedNum + 1; oneToSortedArrayNum <= myArrayNum; oneToSortedArrayNum++) {
-                        sortedArray[oneToSortedArrayNum] = myArray[oneToSortedArrayNum - 1];
+                    arrayTempSored[numFixed] = elementToBeCompared;
+                    //元の固定点以降〜比較対象点までの数列を右にずらす。
+                    for (int numToBeShiftedFromLeft = numFixed + 1; numToBeShiftedFromLeft <= numToBeCompared; numToBeShiftedFromLeft++) {
+                        //左隣の配列要素のバリューをソート済み配列に格納していく。
+                        arrayTempSored[numToBeShiftedFromLeft] = myArray[numToBeShiftedFromLeft - 1];
                     }
-                    for (int sortedArrayNumTonEnd = myArrayNum + 1; sortedArrayNumTonEnd < myArray.length; sortedArrayNumTonEnd++) {
-                        sortedArray[sortedArrayNumTonEnd] = myArray[sortedArrayNumTonEnd];
+                    //比較対象点以降〜配列の最後までをそのまま格納する。
+                    for (int numAfterToBeComparedToEnd = numToBeCompared + 1; numAfterToBeComparedToEnd < myArray.length; numAfterToBeComparedToEnd++) {
+                        arrayTempSored[numAfterToBeComparedToEnd] = myArray[numAfterToBeComparedToEnd];
                     }
-
                     //並べ替えた数列をシャローコピーではなく、ディープコピーで配列をソート後のものに入れ替える。
-                    myArray = Arrays.copyOf(sortedArray, sortedArray.length);
+                    myArray = Arrays.copyOf(arrayTempSored, arrayTempSored.length);
                     //繰り返し用変数の初期化
-                    myArrayNum = fixedNum;
+                    numToBeCompared = numFixed;
                 }
             }
         }
