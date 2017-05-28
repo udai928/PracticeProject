@@ -44,7 +44,7 @@ public class Main {
         System.out.println("\nquickSortMethod start.");
         int[] quickSortedArray = Arrays.copyOf(myArray,myArray.length);
         printTime();
-        quickSortedArray = ms.quickSortMethod(quickSortedArray);
+        quickSortedArray = ms.quickSortMethod(quickSortedArray, 0, myArray.length - 1);
         printTime();
         System.out.println(ms.checkArray(quickSortedArray));
         System.out.println("quickSort end.\n\n");

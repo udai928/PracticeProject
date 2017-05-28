@@ -153,106 +153,128 @@ public class MySort {
         return myArray;
     }
 
-    public int[] quickSortMethod(int[] myArray) {
+    /*
+    quickSort
 
-        //pivotは数列のランダム番目の値とする。
-        Random rnd = new Random();
-        int pivotNum = rnd.nextInt(myArray.length);
-        int pivot = myArray[pivotNum];
+    */
 
-        //leftChangeTargetFound・rightChangeTargetFound:pivotより大きい要素を見つけたら次の試行からスキップするためのフラグ
-        boolean leftChangeTargetFound = false;
-        boolean rightChangeTargetFound = false;
-        int elementLeftNumToChangeWithRight = -1;
-        int elementRightNumToChangeWithLeft = -1;
-        int elementNumLeft = 0;
-        int elementNumRight = myArray.length - 1;
+    public int[] quickSortMethod(int[] myArray, int initialIndexOfLeft, int initialIndexOfRight) {
 
-        //pivotの位置と左右の候補の位置がすべて同じの場合、入れ替え候補探索処理を抜ける
-        while (pivotNum >= elementNumLeft || pivotNum <= elementNumRight) {
-            int left = myArray[elementNumLeft];
-            int right = myArray[elementNumRight];
-            if (leftChangeTargetFound == false && left >= pivot) {
-                leftChangeTargetFound = true;
-                elementLeftNumToChangeWithRight = elementNumLeft;
+        //これでなんでうまく動くのか理解できていない。
+        int curleft = initialIndexOfLeft;
+        int curright = initialIndexOfRight;
+        int pivot = myArray[(curleft + curright) / 2];
+        do {
+            while(myArray[curleft] < pivot){curleft++;}
+            while(myArray[curright] > pivot){curright--;}
+            if(curleft <= curright){
+                swap(myArray, curleft++, curright--);
             }
-            //右候補が見つからなかったらpivotを右候補にする。
-            if (rightChangeTargetFound == false && right < pivot) {
-                rightChangeTargetFound = true;
-                elementRightNumToChangeWithLeft = elementNumRight;
-            } else if (rightChangeTargetFound == false && elementNumRight == pivotNum) {
-                rightChangeTargetFound = true;
-                elementRightNumToChangeWithLeft = elementNumRight;
-            }
-
-            //左右両方の入れ替え候補の要素が決定したら、入れ替える。
-            if (leftChangeTargetFound == true && rightChangeTargetFound == true) {
-                int temp = myArray[elementLeftNumToChangeWithRight];
-                myArray[elementLeftNumToChangeWithRight] = myArray[elementRightNumToChangeWithLeft];
-                myArray[elementRightNumToChangeWithLeft] = temp;
-                leftChangeTargetFound = false;
-                rightChangeTargetFound = false;
-                //pivotは同じ値を利用するので、配列番号を入れ直す。
-                if (pivotNum == elementLeftNumToChangeWithRight && pivotNum != elementRightNumToChangeWithLeft) {
-                    pivotNum = elementRightNumToChangeWithLeft;
-                    pivot = myArray[pivotNum];
-                } else if (pivotNum == elementRightNumToChangeWithLeft && pivotNum != elementLeftNumToChangeWithRight) {
-                    pivotNum = elementLeftNumToChangeWithRight;
-                    pivot = myArray[pivotNum];
-                } else if (pivotNum == elementRightNumToChangeWithLeft && pivotNum == elementLeftNumToChangeWithRight) {
-                    break;
-                }
-                //入れ替えたら入れ替え要素の探索をやり直す。（最下部のインクリメントの分多く足しておく）
-                elementNumLeft = 0 - 1;
-                elementNumRight = myArray.length - 1 + 1;
-            }
-
-            //インクリメント
-            elementNumLeft++;
-            elementNumRight--;
-
+        }while(curleft <= curright);
+        if(initialIndexOfLeft < curright){
+            quickSortMethod(myArray, initialIndexOfLeft, curright);
+        }
+        if(curleft < initialIndexOfRight){
+            quickSortMethod(myArray, curleft, initialIndexOfRight);
         }
 
-        int[] leftHalfMyArray = null;
-        int[] rightHalfMyArray = null;
-        //左右の候補が両方ともpivotの場合はpviotで配列を分割して分割した配列でそれぞれ入れ替え処理を開始する。
-        //pivotの配列位置で配列を2分割し、それぞれの配列で探索を行う。
-        if (myArray.length > 2) {
-            leftHalfMyArray = Arrays.copyOfRange(myArray, 0, pivotNum + 1);
-            if (myArray.length > pivotNum + 1) {
-                rightHalfMyArray = Arrays.copyOfRange(myArray, pivotNum + 1, myArray.length);
-            }
-        } else if (myArray.length == 2 && myArray[0] <= myArray[1]) {
-            leftHalfMyArray = new int[1];
-            leftHalfMyArray[0] = myArray[0];
-            rightHalfMyArray = new int[1];
-            rightHalfMyArray[0] = myArray[1];
-        } else if (myArray.length == 2 && myArray[0] > myArray[1]) {
-            leftHalfMyArray = new int[1];
-            leftHalfMyArray[0] = myArray[1];
-            rightHalfMyArray = new int[1];
-            rightHalfMyArray[0] = myArray[0];
-        }
+        return myArray;
 
-        //分割した配列2つを順に結合した配列を生成し、返り値に渡す。
-        if (leftHalfMyArray.length > 1) {
-            leftHalfMyArray = quickSortMethod(leftHalfMyArray);
-        }
-        if (rightHalfMyArray != null && rightHalfMyArray.length > 1) {
-            rightHalfMyArray = quickSortMethod(rightHalfMyArray);
-        }
+//        //leftChangeTargetFound・rightChangeTargetFound:pivotより大きい要素を見つけたら次の試行からスキップするためのフラグ
+//        boolean leftChangeTargetFound = false;// i found the target which is bigger than value of pivot
+//        boolean rightChangeTargetFound = false;// i found the target which is smaller than value of pivot
+//        int elementLeftNumToChangeWithRight = -1;
+//        int elementRightNumToChangeWithLeft = -1;
+//        int elementNumLeft = 0;
+//        int elementNumRight = myArray.length - 1;
 
-        int[] joinedArray = null;
-        if (rightHalfMyArray != null) {
-            joinedArray = new int[leftHalfMyArray.length + rightHalfMyArray.length];
-            System.arraycopy(leftHalfMyArray, 0, joinedArray, 0, leftHalfMyArray.length);
-            System.arraycopy(rightHalfMyArray, 0, joinedArray, leftHalfMyArray.length, rightHalfMyArray.length);
-        } else if (rightHalfMyArray == null) {
-            joinedArray = new int[leftHalfMyArray.length];
-            System.arraycopy(leftHalfMyArray, 0, joinedArray, 0, leftHalfMyArray.length);
-        }
-        return joinedArray;
+//        //pivotの位置と左右の候補の位置がすべて同じの場合、入れ替え候補探索処理を抜ける
+//        while (indexOfPivot >= elementNumLeft || indexOfPivot <= elementNumRight) {
+//            int left = myArray[elementNumLeft];
+//            int right = myArray[elementNumRight];
+//            if (leftChangeTargetFound == false && left >= valueOfPivot) {
+//                leftChangeTargetFound = true;
+//                elementLeftNumToChangeWithRight = elementNumLeft;
+//            }
+//            //右候補が見つからなかったらpivotを右候補にする。
+//            if (rightChangeTargetFound == false && right < valueOfPivot) {
+//                rightChangeTargetFound = true;
+//                elementRightNumToChangeWithLeft = elementNumRight;
+//            } else if (rightChangeTargetFound == false && elementNumRight == indexOfPivot) {
+//                rightChangeTargetFound = true;
+//                elementRightNumToChangeWithLeft = elementNumRight;
+//            }
+//
+//            //左右両方の入れ替え候補の要素が決定したら、入れ替える。
+//            if (leftChangeTargetFound == true && rightChangeTargetFound == true) {
+//                int temp = myArray[elementLeftNumToChangeWithRight];
+//                myArray[elementLeftNumToChangeWithRight] = myArray[elementRightNumToChangeWithLeft];
+//                myArray[elementRightNumToChangeWithLeft] = temp;
+//                leftChangeTargetFound = false;
+//                rightChangeTargetFound = false;
+//                //pivotは同じ値を利用するので、配列番号を入れ直す。
+//                if (indexOfPivot == elementLeftNumToChangeWithRight && indexOfPivot != elementRightNumToChangeWithLeft) {
+//                    indexOfPivot = elementRightNumToChangeWithLeft;
+//                    valueOfPivot = myArray[indexOfPivot];
+//                } else if (indexOfPivot == elementRightNumToChangeWithLeft && indexOfPivot != elementLeftNumToChangeWithRight) {
+//                    indexOfPivot = elementLeftNumToChangeWithRight;
+//                    valueOfPivot = myArray[indexOfPivot];
+//                } else if (indexOfPivot == elementRightNumToChangeWithLeft && indexOfPivot == elementLeftNumToChangeWithRight) {
+//                    break;
+//                }
+//                //入れ替えたら入れ替え要素の探索をやり直す。（最下部のインクリメントの分多く足しておく）
+//                elementNumLeft = 0 - 1;
+//                elementNumRight = myArray.length - 1 + 1;
+//            }
+//
+//            //インクリメント
+//            elementNumLeft++;
+//            elementNumRight--;
+//
+//        }
+//
+//        int[] leftHalfMyArray = null;
+//        int[] rightHalfMyArray = null;
+//        //左右の候補が両方ともpivotの場合はpviotで配列を分割して分割した配列でそれぞれ入れ替え処理を開始する。
+//        //pivotの配列位置で配列を2分割し、それぞれの配列で探索を行う。
+//        if (myArray.length > 2) {
+//            leftHalfMyArray = Arrays.copyOfRange(myArray, 0, indexOfPivot + 1);
+//            if (myArray.length > indexOfPivot + 1) {
+//                rightHalfMyArray = Arrays.copyOfRange(myArray, indexOfPivot + 1, myArray.length);
+//            }
+//        } else if (myArray.length == 2 && myArray[0] <= myArray[1]) {
+//            leftHalfMyArray = new int[1];
+//            leftHalfMyArray[0] = myArray[0];
+//            rightHalfMyArray = new int[1];
+//            rightHalfMyArray[0] = myArray[1];
+//        } else if (myArray.length == 2 && myArray[0] > myArray[1]) {
+//            leftHalfMyArray = new int[1];
+//            leftHalfMyArray[0] = myArray[1];
+//            rightHalfMyArray = new int[1];
+//            rightHalfMyArray[0] = myArray[0];
+//        }
+//
+//        //分割した配列2つを順に結合した配列を生成し、返り値に渡す。
+//        if (leftHalfMyArray.length > 1) {
+//            leftHalfMyArray = quickSortMethod(leftHalfMyArray);
+//        }
+//        if (rightHalfMyArray != null && rightHalfMyArray.length > 1) {
+//            rightHalfMyArray = quickSortMethod(rightHalfMyArray);
+//        }
+//
+//        int[] joinedArray = null;
+//        if (rightHalfMyArray != null) {
+//            joinedArray = new int[leftHalfMyArray.length + rightHalfMyArray.length];
+//            System.arraycopy(leftHalfMyArray, 0, joinedArray, 0, leftHalfMyArray.length);
+//            System.arraycopy(rightHalfMyArray, 0, joinedArray, leftHalfMyArray.length, rightHalfMyArray.length);
+//        } else if (rightHalfMyArray == null) {
+//            joinedArray = new int[leftHalfMyArray.length];
+//            System.arraycopy(leftHalfMyArray, 0, joinedArray, 0, leftHalfMyArray.length);
+//        }
+//        return joinedArray;
     }
+
+
 
     public int[] bucketSort(int[] myArray, int elementRange) {
         //前提条件に「要素の範囲<=要素の個数」が約束されている場合に高速でソートできる。
